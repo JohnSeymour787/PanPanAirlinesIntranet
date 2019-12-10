@@ -20,9 +20,11 @@ namespace PanPanIntranet.Controllers
 {
     public class HomeController : Controller
     {
+        public const string connectionString = @"Provider = Microsoft.Jet.OLEDB.4.0; Data Source = |DataDirectory|\PanPanDB.mdb; Persist Security Info = True";
+
         public ActionResult Index()
         {
-            OleDbConnection conn = new OleDbConnection(@"Provider = Microsoft.Jet.OLEDB.4.0; Data Source = C:\Users\NAME\Documents\PanPanDB.mdb; Persist Security Info = True");
+            OleDbConnection conn = new OleDbConnection(connectionString);
             OleDbCommand command = new OleDbCommand("select * from Employees");
             conn.Open();
             command.Connection = conn;
