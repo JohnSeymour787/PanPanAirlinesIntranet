@@ -1,42 +1,8 @@
-﻿@model List<PanPanIntranet.Models.Employee>
-
-@{
+﻿@{
     ViewBag.Title = "Home Page";
 }
 
-<p>
-    Number of employee records: @Model.Count
-    <br/>
-    <br/>
-    <br/>
-
-    <table>
-        <tr>
-            <th>EmployeeID</th>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Address</th>
-            <th>Phone Number</th>
-            <th>Role</th>
-
-        </tr>
-        @foreach(var customer in Model)
-        {
-            <tr>
-                <td>@customer.EmployeeID</td>
-                <td>@customer.LastName</td>
-                <td>@customer.FirstName</td>
-                <td>@customer.Address</td>
-                <td>@customer.Phone</td>
-                <td>@customer.Role</td>
-            </tr>
-        }
-
-    </table>
-
-
-</p>
-
+<h1>Welcome to PanPan Airlines!</h1>
 
 <div class="jumbotron">
     <h1>ASP.NET</h1>

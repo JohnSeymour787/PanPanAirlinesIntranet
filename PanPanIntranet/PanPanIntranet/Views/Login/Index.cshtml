@@ -1,0 +1,23 @@
+﻿@model PanPanIntranet.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+<br />
+<!--Form submission goes to action "AuthoriseLogin" in the "Login" controller-->
+@using (Html.BeginForm("AuthoriseLogin", "Login", FormMethod.Post))
+{ 
+    <p>
+        <label>Username:</label>
+        <!--Creating a HTML textbox whose form data will be saved to the username field of the @@model-->
+        @Html.TextBoxFor(m=>m.Username)
+    </p>
+
+    <p>
+        <label>Password:</label>
+        @Html.TextBoxFor(m => m.Password)
+    </p>
+
+    <input type="submit" value="Login"/>
+}
