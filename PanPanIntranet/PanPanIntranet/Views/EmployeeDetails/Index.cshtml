@@ -1,0 +1,49 @@
+﻿@model List<PanPanIntranet.Models.Employee>
+
+@{
+    ViewBag.Title = "EmployeeDetails";
+    //Might want to move this to a shared Layout view so it affects all pages
+    if (Session["username"] == null)
+    {
+        Response.Redirect("~/Login/Index/");
+    }
+}
+
+<h2>EmployeeDetails</h2>
+
+<p>
+
+    <br />
+    Welcome @Session["username"]
+    <br />
+    Number of employee records: @Model.Count
+    <br />
+
+    <table>
+        <tr>
+            <th>EmployeeID</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Role</th>
+
+        </tr>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.EmployeeID</td>
+                <td>@customer.LastName</td>
+                <td>@customer.FirstName</td>
+                <td>@customer.Address</td>
+                <td>@customer.Phone</td>
+                <td>@customer.Role</td>
+            </tr>
+        }
+
+    </table>
+
+    <br />
+    <a href="@Url.Action("Logout", "Login")">Logout</a>
+
+</p>
