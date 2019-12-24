@@ -7,15 +7,6 @@ using System.Data.OleDb;
 using PanPanIntranet.Models;
 
 
-/* TODO
- * 
- * -try/catch exception handling for DB connection
- * 
- * 
- * 
- */
-
-
 namespace PanPanIntranet.Controllers
 {
     public class EmployeeDetailsController : Controller
@@ -23,38 +14,72 @@ namespace PanPanIntranet.Controllers
         // GET: EmployeeDetails
         public ActionResult Index()
         {
-            OleDbConnection conn = new OleDbConnection(HomeController.connectionString);
-            OleDbCommand command = new OleDbCommand("select * from Employees");
-            conn.Open();
-            command.Connection = conn;
-            OleDbDataReader reader = command.ExecuteReader();
+            //If no logged in user then redirect to home page
+            if ((Session["username"] == null) || (Session["role"] == null))
+                return RedirectToAction("Index", "Home");
 
+            //Parsing the user role text column in the DB to a CompanyRole enum type
+            bool roleExists = Enum.TryParse((string)Session["role"], out Employee.CompanyRole role);
 
-            //Converting query result into list of Employee model classes
-            List<Employee> employees = new List<Employee>();
+            //If there was a parsing error then also redirect to home
+            if (!roleExists) return RedirectToAction("Index", "Home");
 
-            while (reader.Read())
+            OleDbConnection conn = new OleDbConnection();
+            OleDbCommand command = new OleDbCommand();
+
+            try
             {
-                //Attempting to convert string-stored Role column in DB to enum type used by model class
-                bool roleExists = Enum.TryParse(reader.GetString(5), out Employee.CompanyRole role);
+                conn.ConnectionString = HomeController.connectionString;
 
-                employees.Add(new Employee()
+                //Any role other than Executives or Managers will only display the details of that user, by limiting the DB query
+                if ((role != Employee.CompanyRole.Executive) && (role != Employee.CompanyRole.Manager))
                 {
-                    EmployeeID = (int)reader.GetValue(0),
-                    LastName = reader.GetString(1),
-                    FirstName = reader.GetString(2),
-                    Address = reader.GetString(3),
-                    Phone = (int)reader.GetValue(4),
-                    //If the parse was successful then the corresponding role is applied, otherwise, the default role value
-                    //is assigned. (Note that Enum.TryParse will default to the first enum value if it can't succeed, but this 
-                    //is safer.
-                    Role = roleExists ? role : Employee.CompanyRole.None
+                    command.CommandText = "select * from Employees where username = UN";
+                    command.Parameters.Add("UN", OleDbType.VarChar).Value = Session["username"];
                 }
-                );
-            }
+                //Else, managers and executives query DB for all tuples
+                else
+                    command.CommandText = "select * from Employees";
 
-            conn.Close();
-            return View(employees);
+                conn.Open();
+                command.Connection = conn;
+                OleDbDataReader reader = command.ExecuteReader();
+
+
+                //Converting query result into list of Employee model classes
+                List<Employee> employees = new List<Employee>();
+
+                while (reader.Read())
+                {
+                    //Attempting to convert string-stored Role column in DB to enum type used by model class
+                    roleExists = Enum.TryParse(reader.GetString(5), out role);
+
+                    employees.Add(new Employee()
+                    {
+                        EmployeeID = (int)reader.GetValue(0),
+                        LastName = reader.GetString(1),
+                        FirstName = reader.GetString(2),
+                        Address = reader.GetString(3),
+                        Phone = (int)reader.GetValue(4),
+                        //If the parse was successful then the corresponding role is applied, otherwise, the default role value
+                        //is assigned. (Note that Enum.TryParse will default to the first enum value if it can't succeed, but this 
+                        //is safer.
+                        Role = roleExists ? role : Employee.CompanyRole.None
+                    }
+                    );
+                }
+
+                return View(employees);
+            }
+            //If any exceptions occur during DB access, redirect to home
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            finally
+            { 
+                conn.Close();
+            }
         }
     }
 }
