@@ -12,6 +12,13 @@ namespace PanPanIntranet.Controllers
     public class EmployeeDetailsController : Controller
     {
         // GET: EmployeeDetails
+        /// <summary>
+        /// Only allows access for logged-in users
+        /// Checks user role
+        /// Queries DB and displays details of all users if current user has either manager or executive role
+        /// Otherwise, only displays details of current user
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             //If no logged in user then redirect to home page
@@ -25,7 +32,7 @@ namespace PanPanIntranet.Controllers
             if (!roleExists) return RedirectToAction("Index", "Home");
 
             OleDbConnection conn = new OleDbConnection();
-            OleDbCommand command = new OleDbCommand();
+            OleDbCommand command = new OleDbCommand("select employeeID, lastName, firstName, address, phone, role from Employees");
 
             try
             {
@@ -34,12 +41,12 @@ namespace PanPanIntranet.Controllers
                 //Any role other than Executives or Managers will only display the details of that user, by limiting the DB query
                 if ((role != Employee.CompanyRole.Executive) && (role != Employee.CompanyRole.Manager))
                 {
-                    command.CommandText = "select * from Employees where username = UN";
+                    //Thus, adding the where clause to the query string
+                    command.CommandText += " where username = UN";
                     command.Parameters.Add("UN", OleDbType.VarChar).Value = Session["username"];
                 }
-                //Else, managers and executives query DB for all tuples
-                else
-                    command.CommandText = "select * from Employees";
+
+                //Otherwise, for managers and executives the initial query string to return all tuples remains
 
                 conn.Open();
                 command.Connection = conn;

@@ -10,7 +10,6 @@ using PanPanIntranet.Models;
 /*
  * ToDo:
  * -DB Connection String in another file
- * -try/catch exception handling for DB connection
  * 
  */
 
