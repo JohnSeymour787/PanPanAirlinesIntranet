@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "EmployeeDetails";
-    //Might want to move this to a shared Layout view so it affects all pages
+    
     if (Session["username"] == null)
     {
         Response.Redirect("~/Login/Index/");
@@ -29,15 +29,24 @@
             <th>Role</th>
 
         </tr>
-        @foreach (var customer in Model)
+        @foreach (var employee in Model)
         {
             <tr>
-                <td>@customer.EmployeeID</td>
-                <td>@customer.LastName</td>
-                <td>@customer.FirstName</td>
-                <td>@customer.Address</td>
-                <td>@customer.Phone</td>
-                <td>@customer.Role</td>
+                <td>@employee.EmployeeID</td>
+                <td>@employee.LastName</td>
+                <td>@employee.FirstName</td>
+                <td>@employee.Address</td>
+                <td>@employee.Phone</td>
+                <td>@employee.Role</td>
+                @switch (Session["role"])
+                    {
+                        case "Manager":
+                        case "Executive":
+                        //<td>@Html.ActionLink("Edit", "Edit", "EmployeeDetails", employee)</td>
+                        //<td><a href= "~/EmployeeDetails/Edit?id=@employee.EmployeeID">Edit</a></td>
+                        <td><a href="@Url.Action("Edit", "EmployeeDetails", new { id = employee.EmployeeID })">Edit</a></td>
+                        break;
+                    }
             </tr>
         }
 
