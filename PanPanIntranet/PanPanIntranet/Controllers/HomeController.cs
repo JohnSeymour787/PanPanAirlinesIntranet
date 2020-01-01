@@ -9,8 +9,7 @@ using PanPanIntranet.Models;
 
 /*
  * ToDo:
- * -DB Connection String in another file
- * 
+ * -DB Connection String in another file <-- Maybe
  */
 
 

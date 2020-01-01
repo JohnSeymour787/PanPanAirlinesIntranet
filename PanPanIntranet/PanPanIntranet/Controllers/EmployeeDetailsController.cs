@@ -57,24 +57,7 @@ namespace PanPanIntranet.Controllers
                 List<Employee> employees = new List<Employee>();
 
                 while (reader.Read())
-                {
-                    //Attempting to convert string-stored Role column in DB to enum type used by model class
-                    roleExists = Enum.TryParse(reader.GetString(5), out role);
-
-                    employees.Add(new Employee()
-                    {
-                        EmployeeID = (int)reader.GetValue(0),
-                        LastName = reader.GetString(1),
-                        FirstName = reader.GetString(2),
-                        Address = reader.GetString(3),
-                        Phone = (int)reader.GetValue(4),
-                        //If the parse was successful then the corresponding role is applied, otherwise, the default role value
-                        //is assigned. (Note that Enum.TryParse will default to the first enum value if it can't succeed, but this 
-                        //is safer.
-                        Role = roleExists ? role : Employee.CompanyRole.None
-                    }
-                    );
-                }
+                    employees.Add(CreateObject(reader));
 
                 return View(employees);
             }
@@ -87,6 +70,62 @@ namespace PanPanIntranet.Controllers
             { 
                 conn.Close();
             }
+        }
+
+
+
+        public ActionResult Edit(int? id)
+        {
+            OleDbConnection conn = new OleDbConnection();
+            OleDbCommand command = new OleDbCommand("select employeeID, lastName, firstName, address, phone, role from Employees where employeeID = ID");
+            command.Parameters.Add("ID", OleDbType.Integer).Value = id;
+            
+            try
+            {
+                conn.ConnectionString = HomeController.connectionString;
+                conn.Open();
+                command.Connection = conn;
+                OleDbDataReader reader = command.ExecuteReader();
+                reader.Read();
+
+                Employee toEdit = CreateObject(reader);
+
+                return View(toEdit);
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "EmployeeDetails");
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+        }
+
+
+        /// <summary>
+        /// Creates an Employee model object from an OleDbDataReader resulting from a select query.
+        /// Creates an Employee model for the current record the reader is pointing to.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        private Employee CreateObject(OleDbDataReader reader)
+        {
+            Employee result = new Employee();
+
+            result.EmployeeID = (int)reader.GetValue(0);
+            result.LastName = reader.GetString(1);
+            result.FirstName = reader.GetString(2);
+            result.Address = reader.GetString(3);
+            result.Phone = (int)reader.GetValue(4);
+            //If a parse was successful then the corresponding role is applied, otherwise, the default role value
+            //is assigned. (Note that Enum.TryParse will default to the first enum value if it can't succeed, but this 
+            //is safer.
+            bool roleExists = Enum.TryParse(reader.GetString(5), out Employee.CompanyRole role);
+            result.Role = roleExists ? role : Employee.CompanyRole.None;
+
+            return result;
         }
     }
 }
