@@ -74,6 +74,12 @@ namespace PanPanIntranet.Controllers
 
 
 
+        /// <summary>
+        /// GET method to edit each employee's details based on their ID. When action is run, will query DB to get all details of specific employee, before 
+        /// turning it into an Employee model object and passing this to the Edit.cshtml view.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Edit(int? id)
         {
             OleDbConnection conn = new OleDbConnection();
@@ -101,6 +107,50 @@ namespace PanPanIntranet.Controllers
                 conn.Close();
             }
 
+        }
+
+        /// <summary>
+        /// POST method called upon submission of update form from Edit.cshtml. Takes updated Employee model details from that form
+        /// and updates DB with new details.
+        /// </summary>
+        /// <param name="employeeToUpdate"></param>
+        /// <returns></returns>
+        public ActionResult UpdateUserDetails(Employee employeeToUpdate)
+        {
+            OleDbConnection conn = new OleDbConnection();
+            OleDbCommand command = new OleDbCommand("update Employees set " +
+                "lastName=?, " +
+                "firstName=?, " +
+                "address=?, " +
+                "phone=?, " +
+                "role=? " +
+                "where employeeID = ?");
+                
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToUpdate.LastName;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToUpdate.FirstName;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToUpdate.Address;
+            command.Parameters.Add("?", OleDbType.Integer).Value = employeeToUpdate.Phone;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToUpdate.Role.ToString();
+            command.Parameters.Add("?", OleDbType.Integer).Value = employeeToUpdate.EmployeeID;
+
+            try
+            {
+                conn.ConnectionString = HomeController.connectionString;
+                conn.Open();
+                command.Connection = conn;
+                
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return RedirectToAction("Index", "EmployeeDetails");
         }
 
 
