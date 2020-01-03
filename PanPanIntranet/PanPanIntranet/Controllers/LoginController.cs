@@ -28,8 +28,8 @@ namespace PanPanIntranet.Controllers
             OleDbConnection conn = new OleDbConnection(HomeController.connectionString);
             //Using MS Access's StringCompare function to ensure query matching is case sensitive (is insensitive by default). See: https://stackoverflow.com/questions/10046627/how-to-write-case-sensitive-query-for-ms-access
             OleDbCommand command = new OleDbCommand("SELECT * FROM Employees WHERE(StrComp(username, UN, 0) = 0) AND (StrComp(password, PW, 0) = 0)");
-            command.Parameters.Add("UN", OleDbType.VarWChar).Value = loginDetails.Username;
-            command.Parameters.Add("PW", OleDbType.VarWChar).Value = loginDetails.Password;
+            command.Parameters.Add("UN", OleDbType.VarWChar).Value = loginDetails.Username ?? "";
+            command.Parameters.Add("PW", OleDbType.VarWChar).Value = loginDetails.Password ?? "";
 
             try
             {

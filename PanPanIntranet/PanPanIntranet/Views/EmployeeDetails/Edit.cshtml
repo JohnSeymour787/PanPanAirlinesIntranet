@@ -9,19 +9,47 @@
 
 <!--
     ToDo:
-    -Manual displaying of employee properties in textboxes within a form
-    -Submit form button and controller method to handle edited data
     -Reset button to reset back to original values?
-    -^Controller action needs to update the DB and then refresh the page (aka, redirect to EmployeeDetails Index)
     -Working back button (may need to just use JS)
 -->
 
+@using (Html.BeginForm("UpdateUserDetails", "EmployeeDetails", FormMethod.Post))
+{
+    <p>
+        <!--ID field visible but not modifiable-->
+        <label>ID:</label>
+        @Html.TextBoxFor(m => m.EmployeeID, new { @readonly = true })
+    </p>
 
-<!--ID field should be visible but not modifiable-->
-@Html.EditorForModel(Model)
-<!--Try using html.EnumDropDownListFor<>
-Html.EnumDropDownListFor(PanPanIntranet.Models.Employee.CompanyRole) 
+    <p>
+        <label>Last Name:</label>
+        @Html.TextBoxFor(m => m.LastName)
+    </p>
 
--->
+    <p>
+        <label>First Name:</label>
+        @Html.TextBoxFor(m => m.FirstName)
+    </p>
+
+    <p>
+        <label>Address:</label>
+        @Html.TextBoxFor(m => m.Address)
+    </p>
+
+    <p>
+        <label>Phone Number:</label>
+        @Html.TextBoxFor(m => m.Phone)
+    </p>
+
+    <p>
+        <label>Role:</label>
+        @Html.EnumDropDownListFor(m => m.Role)
+    </p>
+
+    <input type = "submit" value = "Update" />
+
+}
+
+
 
 <button>Back</button>
