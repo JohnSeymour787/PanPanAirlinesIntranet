@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.OleDb;
 using PanPanIntranet.Models;
+using PanPanIntranet.ViewModels;
 
 
 namespace PanPanIntranet.Controllers
@@ -109,13 +110,57 @@ namespace PanPanIntranet.Controllers
 
         }
 
+        public ActionResult Add()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Adds an employee and all their details to the DB. Uses a view model combining the Employee model fields and 2 additional fields for username and password.
+        /// </summary>
+        /// <param name="employeeToAdd"></param>
+        /// <returns></returns>
+        public ActionResult AddEmployee(AddEmployeeViewModel employeeToAdd)
+        {
+            OleDbConnection conn = new OleDbConnection();
+            OleDbCommand command = new OleDbCommand("insert into Employees ([lastName], [firstName], [address], [phone], [role], [username], [password]) values (?, ?, ?, ?, ?, ?, ?);");
+
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToAdd.Employee.LastName;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToAdd.Employee.FirstName;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToAdd.Employee.Address;
+            command.Parameters.Add("?", OleDbType.Integer).Value = employeeToAdd.Employee.Phone;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToAdd.Employee.Role.ToString();
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToAdd.Username;
+            command.Parameters.Add("?", OleDbType.VarWChar).Value = employeeToAdd.Password;
+
+
+            try
+            {
+                conn.ConnectionString = HomeController.connectionString;
+                conn.Open();
+                command.Connection = conn;
+
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return RedirectToAction("Index", "EmployeeDetails");
+        }
+
         /// <summary>
         /// POST method called upon submission of update form from Edit.cshtml. Takes updated Employee model details from that form
         /// and updates DB with new details.
         /// </summary>
         /// <param name="employeeToUpdate"></param>
         /// <returns></returns>
-        public ActionResult UpdateUserDetails(Employee employeeToUpdate)
+        public ActionResult UpdateUserDetails(Employee employeeToUpdate, bool edit)
         {
             OleDbConnection conn = new OleDbConnection();
             OleDbCommand command = new OleDbCommand("update Employees set " +

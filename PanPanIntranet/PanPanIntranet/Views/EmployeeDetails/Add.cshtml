@@ -1,0 +1,58 @@
+﻿@model PanPanIntranet.ViewModels.AddEmployeeViewModel
+
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>Add</h2>
+
+<!--
+    ToDo:
+    -Working back button (may need to just use JS)
+-->
+
+@using (Html.BeginForm("AddEmployee", "EmployeeDetails", FormMethod.Post))
+{
+    <p>
+        <label>Last Name:</label>
+        @Html.TextBoxFor(m => m.Employee.LastName)
+    </p>
+
+    <p>
+        <label>First Name:</label>
+        @Html.TextBoxFor(m => m.Employee.FirstName)
+    </p>
+
+    <p>
+        <label>Address:</label>
+        @Html.TextBoxFor(m => m.Employee.Address)
+    </p>
+
+    <p>
+        <label>Phone Number:</label>
+        @Html.TextBoxFor(m => m.Employee.Phone)
+    </p>
+
+    <p>
+        <label>Role:</label>
+        @Html.EnumDropDownListFor(m => m.Employee.Role)
+    </p>
+
+    <p>
+        <label>Username:</label>
+        @Html.TextBoxFor(m => m.Username)
+    </p>
+
+    <p>
+        <label>Password:</label>
+        @Html.TextBoxFor(m => m.Password)
+    </p>
+
+    <input type="submit" value="Add" />
+    <input type="reset" value="Reset" />
+
+}
+
+
+
+<button>Back</button>

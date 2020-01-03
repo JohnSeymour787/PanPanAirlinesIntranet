@@ -53,6 +53,12 @@
     </table>
 
     <br />
+
+    @if (((string)Session["role"] == "Manager") || ((string)Session["role"] == "Executive"))
+    {
+        <a href="@Url.Action("Add", "EmployeeDetails")">Add new employee</a>
+        <br />
+    }
     <a href="@Url.Action("Logout", "Login")">Logout</a>
 
 </p>
